@@ -29,7 +29,7 @@ namespace Application.Profiles
 
                 return new Profile
                 {
-                    UserName = user.UserName,
+                    Username = user.UserName,
                     DisplayName = user.DisplayName,
                     Image = user.Photos.FirstOrDefault(i => i.IsMain)?.Url,
                     Photos = user.Photos,
