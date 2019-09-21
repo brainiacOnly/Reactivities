@@ -1,6 +1,6 @@
 import { RootStore } from "./rootStore";
 import { observable, runInAction, action, computed } from "mobx";
-import { IProfile, IPhoto } from "../models/profile";
+import { IProfile, IPhoto, IProfileValues } from "../models/profile";
 import agent from "../api/agent";
 import { toast } from "react-toastify";
 
@@ -23,6 +23,13 @@ export default class ProfileStore {
         }
 
         return false;
+    }
+
+    @computed get profileValues(): IProfileValues {
+        return {
+            displayName: this.profile!.displayName,
+            bio: this.profile!.bio
+        }
     }
 
     @action loadProfile = async (username: string) => {
@@ -97,6 +104,28 @@ export default class ProfileStore {
             runInAction(() => {
                 this.deletingPhoto = false;
             });
+        }
+    }
+
+    @action editProfile = async (profileValues: IProfileValues) => {
+        this.loading = true;
+        try {
+            await agent.Profiles.update(profileValues);
+            runInAction(() => {
+                this.loading = false;
+                this.profile!.displayName = profileValues.displayName;
+                this.profile!.bio = profileValues.bio;
+
+                if(this.rootStore.userStore.user!.displayName !== profileValues.displayName) {
+                    this.rootStore.userStore.user!.displayName = profileValues.displayName;
+                }
+            });
+        } catch(error) {
+            runInAction(() => {
+                this.loading = false;
+            });
+
+            console.log(error);
         }
     }
 }
