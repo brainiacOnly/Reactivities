@@ -6,15 +6,16 @@ using Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using static Application.Activities.List;
 
 namespace API.Controllers
 {
     public class ActivitiesController : BaseController
     {
         [HttpGet]
-        public async Task<ActionResult<List<ActivityDto>>> List() 
+        public async Task<ActionResult<ActivitiesEnvelop>> List(int? limit, int? offset, bool isGoing, bool isHost, DateTime? startDate) 
         {
-            return await Mediator.Send(new List.Query());
+            return await Mediator.Send(new List.Query(limit, offset, isGoing, isHost, startDate));
         }
 
         [HttpGet("{id}")]
